@@ -228,3 +228,7 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px
 @keyframes wheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
 .scroll-hint{gap:12px;text-shadow:0 2px 12px rgba(0,0,0,.5)}
 @media (max-width:900px){.scroll-hint{display:flex!important}.chapters{bottom:calc(var(--arc) + 56px)}}
+
+/* hide the page scrollbar (the hero is scroll-driven; progress is shown by the rail) */
+html{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}

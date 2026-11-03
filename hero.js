@@ -19,13 +19,13 @@
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103b', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103c', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103b'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103c'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103b')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103c')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -132,7 +132,7 @@
 
   // 1) video frames scrub with a slow push-in
   tl.to(state, { p: 1, duration: 2.8, ease: 'none' }, 0)
-    .fromTo('.hero__video', { scale: 1 }, { scale: 1.3, duration: 3.3, ease: 'power2.in' }, 0)
+    .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 3.3, ease: 'power2.in' }, 0)
     .to('.rail i', { scaleY: 1, duration: 2.8, ease: 'none' }, 0)
     .to('.rail', { opacity: 0, duration: .3 }, 2.6)
     .to('.scroll-hint', { opacity: 0, duration: .4 }, 2.3)
