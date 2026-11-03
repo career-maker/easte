@@ -3,7 +3,7 @@
 // ---------- smooth (inertial) scrolling: wheel steps are eased instead of jumping ----------
 let lenis = null;
 if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  lenis = new Lenis({ lerp: 0.075, wheelMultiplier: 0.85, smoothWheel: true });   // touch keeps native momentum
+  lenis = new Lenis({ lerp: 0.075, wheelMultiplier: 0.85, smoothWheel: true }); window.lenis = lenis;   // touch keeps native momentum
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103i', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103j', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103i'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103j'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103i')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103j')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -199,11 +199,11 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let count = parseInt(badge.textContent, 10) || 0, tt;
 
-  const arrive = (name) => {
-    badge.textContent = String(++count).padStart(2, '0');
+  const arrive = (name, q = 1) => {
+    count += q; badge.textContent = String(count).padStart(2, '0');
     cart.setAttribute('aria-label', `Cart, ${count} items`);
     cart.classList.remove('bump'); void cart.offsetWidth; cart.classList.add('bump');
-    toast.innerHTML = `<i>✓</i>${name} added to cart`; toast.classList.add('show');
+    toast.innerHTML = `<i>✓</i>${q > 1 ? q + ' × ' : ''}${name} added to cart`; toast.classList.add('show');
     clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('show'), 2200);
     const r = cart.getBoundingClientRect();
     const ring = Object.assign(document.createElement('div'), { className: 'ring' });
@@ -212,10 +212,9 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     gsap.fromTo(ring, { scale: .5, opacity: .9 }, { scale: 2.4, opacity: 0, duration: .6, ease: 'power2.out', onComplete: () => ring.remove() });
   };
 
-  document.querySelectorAll('.plus').forEach(btn => btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const pack = btn.closest('.pack'), name = pack.dataset.name;
-    if (reduce || !window.gsap) return arrive(name);
+  const run = (btn, pack, qty) => {
+    const name = pack.dataset.name;
+    if (reduce || !window.gsap) return arrive(name, qty);
     const src = pack.querySelector('img'), s = btn.getBoundingClientRect(), t = cart.getBoundingClientRect();
     const sx = s.left + s.width / 2, sy = s.top + s.height / 2, tx = t.left + t.width / 2, ty = t.top + t.height / 2;
     const size = 96;
@@ -230,7 +229,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     };
     const fly = (el, delay, op) => {
       gsap.set(el, { x: sx - size / 2, y: sy - size * .65, scale: .3, opacity: 0, rotate: -10 });
-      const tl = gsap.timeline({ delay, onComplete: () => { el.remove(); if (!delay) arrive(name); } });
+      const tl = gsap.timeline({ delay, onComplete: () => { el.remove(); if (!delay) arrive(name, qty); } });
       tl.to(el, { opacity: op, scale: 1, duration: .22, ease: 'back.out(2)' })
         // x eases out, y eases in: the product arcs up-and-over like it's thrown
         .to(el, { x: tx - size / 2, duration: .85, ease: 'power2.inOut' }, .12)
@@ -241,8 +240,67 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     };
     for (let i = 5; i >= 1; i--) fly(mk(true), i * .045, .35 - i * .05);
     fly(mk(false), 0, 1);
-  }));
+  };
+
+  // ---------- product quick-view popup ----------
+  const INFO = {
+    'Green Tea': { tag: 'Loose Leaf Green Tea', wt: '100 g', price: 199, mrp: 249, rate: '4.8', pts: ['Whole-leaf, hand-picked', 'Light, fresh and naturally antioxidant-rich', 'Resealable zip pouch keeps it fresh'] },
+    'Kaapi': { tag: 'Coffee blended with Chicory', wt: '100 g', price: 179, mrp: 219, rate: '4.7', pts: ['Rich South-Indian filter style blend', '55% coffee, 45% chicory', 'Crafted in Coorg'] },
+    'Harmony Tea': { tag: 'Premium Dust Tea', wt: '250 g', price: 149, mrp: 185, rate: '4.6', pts: ['Strong, fast-brewing everyday chai', 'Blended for a bold, golden cup', 'Value 250 g pack'] },
+  };
+  const dlg = document.createElement('div');
+  dlg.className = 'qv'; dlg.hidden = true; dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-labelledby', 'qvTitle');
+  dlg.innerHTML = `<div class="qv__scrim"></div><div class="qv__card">
+    <button class="qv__x" type="button" aria-label="Close">×</button>
+    <div class="qv__img"><img alt=""></div>
+    <div class="qv__body">
+      <span class="qv__tag"></span><h3 id="qvTitle"></h3>
+      <p class="qv__meta"><span class="qv__rate">★ <b></b></span><span class="qv__wt"></span></p>
+      <p class="qv__price"><strong></strong><s></s><em></em></p>
+      <ul class="qv__pts"></ul>
+      <div class="qv__row"><div class="qv__qty" role="group" aria-label="Quantity"><button type="button" data-d="-1" aria-label="Decrease">−</button><output>1</output><button type="button" data-d="1" aria-label="Increase">+</button></div>
+        <button class="qv__add" type="button"><span>Add to cart</span></button></div>
+      <button class="qv__next" type="button">Shop next</button>
+    </div></div>`;
+  document.body.appendChild(dlg);
+  const $ = (s) => dlg.querySelector(s), card = $('.qv__card');
+  let cur = null, qty = 1, lastFocus = null;
+  const show = (btn) => {
+    const pack = btn.closest('.pack'), d = INFO[pack.dataset.name];
+    cur = { btn, pack }; qty = 1; lastFocus = btn;
+    $('.qv__img img').src = pack.querySelector('img').src;
+    $('.qv__tag').textContent = pack.dataset.name; $('h3').textContent = d.tag;
+    $('.qv__rate b').textContent = d.rate; $('.qv__wt').textContent = d.wt;
+    $('.qv__price strong').textContent = '₹' + d.price; $('.qv__price s').textContent = '₹' + d.mrp;
+    $('.qv__price em').textContent = Math.round((1 - d.price / d.mrp) * 100) + '% off';
+    $('.qv__pts').innerHTML = d.pts.map(p => `<li>${p}</li>`).join('');
+    $('output').textContent = qty; $('.qv__add span').textContent = 'Add to cart · ₹' + d.price;
+    dlg.hidden = false; document.body.classList.add('qv-open');
+    if (window.lenis) window.lenis.stop();
+    const r = btn.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    requestAnimationFrame(() => {
+      dlg.classList.add('on'); $('.qv__add').focus({ preventScroll: true });
+      if (!reduce && window.gsap) { const cr = card.getBoundingClientRect(); gsap.fromTo(card, { scale: .6, opacity: 0, transformOrigin: `${cx - cr.left}px ${cy - cr.top}px` }, { scale: 1, opacity: 1, duration: .5, ease: 'back.out(1.6)' }); }
+    });
+  };
+  const hide = (after) => {
+    const done = () => { dlg.hidden = true; dlg.classList.remove('on'); document.body.classList.remove('qv-open'); if (window.lenis) window.lenis.start(); if (after) after(); else if (lastFocus) lastFocus.focus({ preventScroll: true }); };
+    dlg.classList.remove('on');
+    if (!reduce && window.gsap) gsap.to(card, { scale: .85, opacity: 0, duration: .22, ease: 'power2.in', onComplete: done }); else done();
+  };
+  document.querySelectorAll('.plus').forEach(btn => btn.addEventListener('click', e => { e.preventDefault(); show(btn); }));
+  $('.qv__scrim').addEventListener('click', () => hide());
+  $('.qv__x').addEventListener('click', () => hide());
+  $('.qv__next').addEventListener('click', () => hide());
+  dlg.querySelectorAll('.qv__qty button').forEach(b => b.addEventListener('click', () => { qty = Math.min(9, Math.max(1, qty + +b.dataset.d)); $('output').textContent = qty; const d = INFO[cur.pack.dataset.name]; $('.qv__add span').textContent = 'Add to cart · ₹' + d.price * qty; }));
+  $('.qv__add').addEventListener('click', () => { const { btn, pack } = cur, q = qty; hide(() => run(btn, pack, q)); });
+  addEventListener('keydown', e => {
+    if (dlg.hidden) return;
+    if (e.key === 'Escape') hide();
+    if (e.key === 'Tab') { const f = [...dlg.querySelectorAll('button')]; const i = f.indexOf(document.activeElement); if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } }
+  });
 })();
+
 
 
 // ---------- mobile menu ----------
