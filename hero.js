@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103k', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103n', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103k'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103n'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103k')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103n')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -128,7 +128,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
       const t = { ...slots[s] }; delete t._s;
       if (mobile()) t.top = ch * .96 - t.width * ASP[pi];
       packs[pi].classList.toggle('is-main', s === 0);
-      if (s === 0) slideEl.dataset.theme = THEMES[pi];
+      if (s === 0) { slideEl.dataset.theme = THEMES[pi]; slideEl.closest('.hero').dataset.theme = THEMES[pi]; }
       packs[pi].style.zIndex = 3 - s;
       const im = packs[pi].querySelector('img'), f = { filter: `blur(${BLUR[s]}px) brightness(${DIM[s]})` };
       if (animate) { gsap.to(packs[pi], { ...t, duration: .8, ease: 'power3.inOut', overwrite: 'auto' }); gsap.to(im, { ...f, duration: .8, ease: 'power3.inOut' }); }
@@ -145,7 +145,6 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   if (reduce || !window.ScrollTrigger) {            // static, fully visible fallback
     video.addEventListener('loadedmetadata', () => { video.currentTime = video.duration * .6; });
     document.querySelector('.slide').style.opacity = 1;
-    document.querySelector('.hero__arc').style.opacity = 1;
     fall.forEach(n => gsap.set(n, { rotate: +n.dataset.r }));
     return;
   }
@@ -175,7 +174,6 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     .to('.scroll-hint', { opacity: 0, duration: .4 }, 0.9)
     // 2) blue scene wipes open
     .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 1.3)
-    .to('.hero__arc', { opacity: 1, duration: .4 }, 1.7)
     // 3) titles, left side
     .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 1.85)
     .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 2.0)

@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Grandstander:wght@800&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="assets/video/poster.jpg?v=20261103k">
-<link rel="stylesheet" href="style.css?v=20261103k">
+<link rel="preload" as="image" href="assets/video/poster.jpg?v=20261103n">
+<link rel="stylesheet" href="style.css?v=20261103n">
 </head>
 <body>
 
@@ -51,7 +51,7 @@
 <main>
   <section class="hero" id="hero" aria-label="Eastea featured products">
     <div class="hero__pin">
-      <video class="hero__video" muted playsinline preload="auto" poster="assets/video/poster.jpg?v=20261103k" disablepictureinpicture aria-hidden="true"></video>
+      <div class="hero__vwrap"><video class="hero__video" muted playsinline preload="auto" poster="assets/video/poster.jpg?v=20261103n" disablepictureinpicture aria-hidden="true"></video></div>
       <div class="hero__shade"></div>
       <div class="loadbar" aria-hidden="true"></div>
 
@@ -85,10 +85,9 @@
         <button class="next" type="button" aria-label="Show next product"><span class="next__a"><svg viewBox="0 0 60 24" width="44" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h54M46 3l10 9-10 9"/></svg><svg viewBox="0 0 60 24" width="44" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h54M46 3l10 9-10 9"/></svg></span></button>
       </div>
       </div>
-
-      <svg class="hero__arc" viewBox="0 0 1920 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 120 V113 C 420 118 760 40 1130 6 C 1250 -3 1330 0 1450 14 C 1620 38 1780 90 1920 118 V120 Z" fill="#fff"/></svg>
       <p class="scroll-hint" aria-hidden="true"><span class="mouse"><i></i></span>Scroll to explore</p>
     </div>
+    <div class="hero__tail" aria-hidden="true"><svg class="hero__arc" viewBox="0 0 1920 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 120 V113 C 420 118 760 40 1130 6 C 1250 -3 1330 0 1450 14 C 1620 38 1780 90 1920 118 V120 Z" fill="#fff"/></svg></div>
   </section>
 </main>
 <div class="toast" role="status" aria-live="polite"></div>
@@ -96,6 +95,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="hero.js?v=20261103k"></script>
+<script src="hero.js?v=20261103n"></script>
 </body>
 </html>
