@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103d', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103e', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103d'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103e'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103d')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103e')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -123,7 +123,6 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
 
   gsap.registerPlugin(ScrollTrigger);
   gsap.set(leafEls, { rotate: (i, t) => +t.dataset.r - 120, xPercent: (i) => 260 + i * 40, y: (i) => (i % 2 ? -80 : 80), opacity: 0, scale: .8 });
-  gsap.set('.chapters p', { opacity: 0, y: 40 });
   gsap.set('.cup', { opacity: 0, y: 160, rotate: -8 });
   gsap.set(packs, { opacity: 0, y: 240, scale: .88 });
   gsap.set('.pack--harmony', { y: 0, x: 220 });
@@ -142,15 +141,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   // 1) video frames scrub with a slow push-in
   tl.to(state, { p: 1, duration: 2.8, ease: 'none' }, 0)
     .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 3.3, ease: 'power2.in' }, 0)
-    .to('.rail i', { scaleY: 1, duration: 2.8, ease: 'none' }, 0)
-    .to('.rail', { opacity: 0, duration: .3 }, 2.6)
     .to('.scroll-hint', { opacity: 0, duration: .4 }, 2.3)
-    .to('.chapters p:nth-child(1)', { opacity: 1, y: 0, duration: .35, ease: 'power3.out' }, .15)
-    .to('.chapters p:nth-child(1)', { opacity: 0, y: -30, duration: .3 }, .85)
-    .to('.chapters p:nth-child(2)', { opacity: 1, y: 0, duration: .35, ease: 'power3.out' }, 1.05)
-    .to('.chapters p:nth-child(2)', { opacity: 0, y: -30, duration: .3 }, 1.65)
-    .to('.chapters p:nth-child(3)', { opacity: 1, y: 0, duration: .35, ease: 'power3.out' }, 1.85)
-    .to('.chapters p:nth-child(3)', { opacity: 0, y: -30, duration: .3 }, 2.45)
     // 2) blue scene wipes open
     .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 2.7)
     .to('.hero__arc', { opacity: 1, duration: .4 }, 3.1)
