@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103h', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103i', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103h'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103i'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103h')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103i')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -107,7 +107,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   const mobile = () => matchMedia('(max-width:900px) and (min-height:540px), (max-width:900px) and (orientation:portrait)').matches;
   const ASP = [1.505, 1.346, 1.336];                 // image height/width per pack
   const slotsD = [[980, 140, 480], [1500, 330, 262], [1762, 398, 140]];
-  const BLUR = [0, 3, 5], DIM = [1, .88, .8];
+  const BLUR = [0, 2, 3.5], DIM = [1, .88, .8];
   let order = [0, 1, 2];                              // order[slot] = pack index
   const slotsFor = () => {
     const cr = document.querySelector('.chrome').offsetHeight;

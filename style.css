@@ -2,7 +2,8 @@
   --ink:#232323; --muted:#726b6b; --line:#ccc; --accent:#ff6b46; --purple:#7750c8;
   --font:'Plus Jakarta Sans',system-ui,sans-serif;
   --pad:clamp(20px,5.2083vw,100px);
-  --head-h:116px; --chrome:153px;          /* header below topbar (design: 37→153) */
+  --hu:min(1px,max(calc(100vw/1920),.6px));
+  --head-h:calc(116*var(--hu)); --chrome:calc(153*var(--hu));          /* header below topbar (design: 37→153) */
   --ease:cubic-bezier(.22,1,.36,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -15,29 +16,30 @@ ul{list-style:none}
 :focus-visible{outline:2px solid var(--purple);outline-offset:3px;border-radius:6px}
 
 /* ---------- top bar ---------- */
-.topbar{background:var(--ink);color:#fff;height:37px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.topbar{background:var(--ink);color:#fff;height:calc(37*var(--hu));display:flex;align-items:center;justify-content:center;overflow:hidden}
 .topbar ul{display:flex;gap:clamp(24px,3.95vw,76px);white-space:nowrap}
-.topbar li{font-size:15px;font-weight:500;letter-spacing:.01em;text-transform:uppercase;display:flex;align-items:center;gap:9px;line-height:1}
+.topbar li{font-size:calc(15*var(--hu));font-weight:500;letter-spacing:.01em;text-transform:uppercase;display:flex;align-items:center;gap:9px;line-height:1}
 .topbar i{width:5px;height:5px;border-radius:50%;background:var(--c)}
 
 /* ---------- header ---------- */
 .chrome{position:sticky;top:0;z-index:50}
-.site-header{position:relative;height:var(--head-h);background:#fff;display:flex;align-items:center;padding:0 var(--pad) 10px;gap:0}
+.site-header{position:relative;height:var(--head-h);background:#fff;display:flex;align-items:center;padding:0 var(--pad) calc(10*var(--hu));gap:0}
 .logo{flex:none;margin:-3px 0 0 -4px}
-.logo img{width:clamp(150px,13.13vw,252px);height:auto}
-nav{align-self:stretch;margin-bottom:-10px;display:flex;gap:clamp(20px,2.86vw,55px);margin-left:clamp(32px,8.5vw,163px)}
-nav a{position:relative;font-size:18px;font-weight:500;letter-spacing:.025em;line-height:106px;padding-bottom:10px;transition:color .25s var(--ease)}
+.logo img{width:calc(252*var(--hu));height:auto}
+nav{align-self:stretch;margin-bottom:calc(-10*var(--hu));display:flex;gap:clamp(20px,2.86vw,55px);margin-left:clamp(32px,8.5vw,163px)}
+nav a{position:relative;font-size:calc(18*var(--hu));font-weight:500;letter-spacing:.025em;line-height:calc(106*var(--hu));padding-bottom:calc(10*var(--hu));transition:color .25s var(--ease)}
 nav a:hover{color:var(--accent)}
-nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px;height:6px;margin-left:-24px;background:var(--accent);border-radius:3px 3px 0 0}
-.search{margin-left:auto;display:flex;align-items:center;gap:16px;width:min(446px,23.2vw);height:53px;padding:0 24px 0 22px;border:1px solid var(--line);border-radius:999px;color:var(--purple);transition:border-color .25s,box-shadow .25s}
+nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc(48*var(--hu));height:calc(6*var(--hu));margin-left:calc(-24*var(--hu));background:var(--accent);border-radius:3px 3px 0 0}
+.search{margin-left:auto;display:flex;align-items:center;gap:calc(16*var(--hu));width:calc(446*var(--hu));height:calc(53*var(--hu));padding:0 calc(24*var(--hu)) 0 calc(22*var(--hu));border:1px solid var(--line);border-radius:999px;color:var(--purple);transition:border-color .25s,box-shadow .25s}
 .search:focus-within{border-color:var(--purple);box-shadow:0 0 0 3px rgba(119,80,200,.15)}
-.search svg{flex:none}
-.search input{flex:1;min-width:0;border:0;outline:0;background:none;font:400 16px var(--font);color:var(--ink)}
+.search svg{flex:none;width:calc(22*var(--hu));height:auto}
+.search input{flex:1;min-width:0;border:0;outline:0;background:none;font:400 calc(16*var(--hu)) var(--font);color:var(--ink)}
 .search input::placeholder{color:var(--muted);opacity:1}
-.actions{display:flex;gap:18px;margin:0 15px 0 clamp(20px,2vw,38px);color:var(--ink)}
-.actions a{position:relative;display:grid;place-items:center;width:24px;height:24px;transition:transform .25s var(--ease)}
+.actions{display:flex;gap:calc(18*var(--hu));margin:0 15px 0 clamp(20px,2vw,38px);color:var(--ink)}
+.actions a{position:relative;display:grid;place-items:center;width:calc(24*var(--hu));height:calc(24*var(--hu));transition:transform .25s var(--ease)}
+.actions a>svg{width:100%;height:auto}
 .actions a:hover{transform:translateY(-2px)}
-.cart b{position:absolute;top:-17px;right:-14px;min-width:24px;height:24px;border-radius:12px;background:var(--accent);color:#fff;font:500 12.6px/24px var(--font);text-align:center}
+.cart b{position:absolute;top:calc(-17*var(--hu));right:calc(-14*var(--hu));min-width:calc(24*var(--hu));height:calc(24*var(--hu));border-radius:99px;background:var(--accent);color:#fff;font:500 calc(12.6*var(--hu))/calc(24*var(--hu)) var(--font);text-align:center}
 
 /* ---------- hero ---------- */
 .hero{position:relative;--arc:clamp(60px,6.25vw,120px)}
@@ -51,7 +53,7 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px
 
 
 /* ---------- slide (end state) ---------- */
-.hero{--u:min(calc(100vw/1920),calc((100svh - 153px)/927))}
+.hero{--u:min(calc(100vw/1920),calc((100svh - var(--chrome))/927));--arc:max(40px,calc(120*var(--u)))}
 .stage{position:absolute;top:0;left:50%;width:calc(1920*var(--u));height:calc(927*var(--u));margin-left:calc(-960*var(--u))}
 .slide{position:absolute;inset:0;z-index:2;background:#153f80;opacity:0;overflow:hidden;will-change:opacity}
 .leaves{position:absolute;inset:0;pointer-events:none}
@@ -95,11 +97,10 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px
 .menu{display:contents}
 .menu-btn{display:none}
 @media (max-width:1500px){nav{margin-left:2.5vw;gap:2.2vw}}
-@media (max-width:1280px){nav a{font-size:16px}.search{width:230px}}
 
 /* tablet & small laptop: collapsible menu */
 @media (max-width:1100px){
-  :root{--head-h:84px;--chrome:121px;--pad:clamp(16px,4vw,40px)}
+  :root{--hu:1px;--head-h:84px;--chrome:121px;--pad:clamp(16px,4vw,40px)}
   .site-header{padding-bottom:0}
   .logo{margin:0 0 0 -2px}
   .logo img{width:clamp(130px,20vw,190px)}
