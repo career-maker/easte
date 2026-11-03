@@ -53,7 +53,7 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px
 /* ---------- slide (end state) ---------- */
 .hero{--u:min(calc(100vw/1920),calc((100svh - 153px)/927))}
 .stage{position:absolute;top:0;left:50%;width:calc(1920*var(--u));height:calc(927*var(--u));margin-left:calc(-960*var(--u))}
-.slide{position:absolute;inset:0;z-index:2;background:rgba(16,61,126,.62);opacity:0;overflow:hidden;will-change:opacity}
+.slide{position:absolute;inset:0;z-index:2;background:#153f80;opacity:0;overflow:hidden;will-change:opacity}
 .leaves{position:absolute;inset:0;pointer-events:none}
 .leaves img{position:absolute;height:auto;will-change:transform,opacity}
 .leaves--front{z-index:5}
@@ -236,3 +236,23 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .lenis.lenis-stopped{overflow:hidden}
+
+/* ---------- themed backgrounds per front pack ---------- */
+.bg{position:absolute;inset:0;opacity:0;transition:opacity .7s var(--ease)}
+.bg--blue{background:#153f80;opacity:1}
+.bg--brown{background:radial-gradient(70% 80% at 62% 45%,#7a3f2b 0%,#5a2c1d 45%,#3b1a10 100%)}
+.bg--green{background:radial-gradient(70% 80% at 55% 45%,#1f9a3c 0%,#0f6e27 50%,#08461a 100%)}
+.slide[data-theme=brown] .bg--blue,.slide[data-theme=green] .bg--blue{opacity:0}
+.slide[data-theme=brown] .bg--brown,.slide[data-theme=green] .bg--green{opacity:1}
+.beans,.leaves{transition:opacity .6s var(--ease);-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.4),#000 13%,#000 87%,rgba(0,0,0,.4));mask-image:linear-gradient(90deg,rgba(0,0,0,.4),#000 13%,#000 87%,rgba(0,0,0,.4))}
+.beans{position:absolute;inset:0;pointer-events:none;opacity:0}
+.beans--front{z-index:5}
+.beans img{position:absolute;height:auto;will-change:transform,opacity}
+.slide[data-theme=brown] .beans{opacity:1}
+.slide[data-theme=brown] .leaves{opacity:0}
+.cup--coffee{visibility:hidden;left:calc(760*var(--u));top:calc(480*var(--u));width:calc(400*var(--u))}
+.cup{transition:visibility 0s}
+.slide:not([data-theme=blue]) .cup--tea{visibility:hidden}
+.slide:not([data-theme=blue]) .cup--coffee{visibility:visible}
+.pack img{transition:filter .6s}
+.slide[data-theme=brown] .next,.slide[data-theme=green] .next{background:rgba(255,255,255,.2)}

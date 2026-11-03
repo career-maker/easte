@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103e', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103f', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103e'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103f'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103e')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103f')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -77,6 +77,24 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     return n;
   });
 
+  // coffee beans for the Kaapi theme: [file, x, y, width, rotation, blurred, layer]
+  const B = [
+    [0,40,170,300,-30,1,'back'],[4,520,40,200,-15,0,'back'],[8,230,10,190,40,1,'back'],
+    [1,60,860,150,-40,1,'back'],[7,380,20,210,20,0,'back'],[11,640,60,170,70,0,'back'],
+    [9,1470,40,170,25,0,'front'],[10,1700,120,170,-35,0,'front'],[4,1540,230,160,60,0,'back'],[7,1800,360,150,15,0,'front'],
+    [13,1300,30,110,0,1,'back'],[8,1830,10,160,50,0,'front'],
+  ];
+  const beanEls = B.map(([f, x, y, w, r, bl, layer]) => {
+    const n = new Image(); n.src = `assets/beans/b${String(f).padStart(2, '0')}${bl ? 'b' : ''}.webp`; n.alt = '';
+    Object.assign(n.style, { left: `calc(${x}*var(--u))`, top: `calc(${y}*var(--u))`, width: `calc(${w}*var(--u))` });
+    n.dataset.r = r;
+    document.querySelector('.beans--' + layer).appendChild(n);
+    return n;
+  });
+  const fall = leafEls.concat(beanEls);
+  const slideEl = document.querySelector('.slide');
+  const THEMES = ['blue', 'brown', 'green'];
+
   // slider: three slots, the big arrow rotates the packs through them
   const mobile = () => matchMedia('(max-width:900px) and (min-height:540px), (max-width:900px) and (orientation:portrait)').matches;
   const ASP = [1.505, 1.346, 1.336];                 // image height/width per pack
@@ -101,6 +119,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
       const t = { ...slots[s] }; delete t._s;
       if (mobile()) t.top = ch * .96 - t.width * ASP[pi];
       packs[pi].classList.toggle('is-main', s === 0);
+      if (s === 0) slideEl.dataset.theme = THEMES[pi];
       packs[pi].style.zIndex = 3 - s;
       if (animate) gsap.to(packs[pi], { ...t, duration: .8, ease: 'power3.inOut', overwrite: 'auto' });
       else gsap.set(packs[pi], t);
@@ -117,13 +136,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     video.addEventListener('loadedmetadata', () => { video.currentTime = video.duration * .6; });
     document.querySelector('.slide').style.opacity = 1;
     document.querySelector('.hero__arc').style.opacity = 1;
-    leafEls.forEach(n => gsap.set(n, { rotate: +n.dataset.r }));
+    fall.forEach(n => gsap.set(n, { rotate: +n.dataset.r }));
     return;
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  gsap.set(leafEls, { rotate: (i, t) => +t.dataset.r - 120, xPercent: (i) => 260 + i * 40, y: (i) => (i % 2 ? -80 : 80), opacity: 0, scale: .8 });
-  gsap.set('.cup', { opacity: 0, y: 160, rotate: -8 });
+  gsap.set(fall, { rotate: (i, t) => +t.dataset.r - 120, xPercent: (i) => 260 + i * 40, y: (i) => (i % 2 ? -80 : 80), opacity: 0, scale: .8 });
+  gsap.set('.cup--tea, .cup--coffee', { opacity: 0, y: 160, rotate: -8 });
   gsap.set(packs, { opacity: 0, y: 240, scale: .88 });
   gsap.set('.pack--harmony', { y: 0, x: 220 });
   gsap.set(['.l1 .t', '.l2 .t', '.splash'], { yPercent: 40, opacity: 0 });
@@ -151,17 +170,17 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 3.65)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 3.8)
     // 4) leaves fall in behind, then packets one by one on the right
-    .to(leafEls, { xPercent: 0, y: 0, opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1, stagger: .06, ease: 'power3.out' }, 2.75)
+    .to(fall, { xPercent: 0, y: 0, opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1, stagger: .06, ease: 'power3.out' }, 2.75)
     .to('.pack--green', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 3.55)
     .to('.pack--kaapi', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 3.95)
     .to('.pack--harmony', { opacity: 1, x: 0, scale: 1, duration: .6, ease: 'power3.out' }, 4.35)
-    .to('.cup', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 4.2)
+    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 4.2)
     .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 4.7)
     .to({}, { duration: .6 });                      // hold
 
   // idle motion once the scene is up: packs float, leaves sway
   packs.forEach((p, i) => gsap.to(p.querySelector('img'), { y: -12, duration: 2.4 + i * .3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: i * .4 }));
-  leafEls.forEach((n, i) => gsap.to(n, { x: i % 2 ? 14 : -14, duration: 3 + (i % 4) * .5, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: i * .15 }));
+  fall.forEach((n, i) => gsap.to(n, { x: i % 2 ? 14 : -14, duration: 3 + (i % 4) * .5, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: i * .15 }));
 })();
 
 

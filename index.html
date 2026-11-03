@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Grandstander:wght@800&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="assets/video/poster.jpg?v=20261103e">
-<link rel="stylesheet" href="style.css?v=20261103e">
+<link rel="preload" as="image" href="assets/video/poster.jpg?v=20261103f">
+<link rel="stylesheet" href="style.css?v=20261103f">
 </head>
 <body>
 
@@ -51,14 +51,17 @@
 <main>
   <section class="hero" id="hero" aria-label="Eastea featured products">
     <div class="hero__pin">
-      <video class="hero__video" muted playsinline preload="auto" poster="assets/video/poster.jpg?v=20261103e" disablepictureinpicture aria-hidden="true"></video>
+      <video class="hero__video" muted playsinline preload="auto" poster="assets/video/poster.jpg?v=20261103f" disablepictureinpicture aria-hidden="true"></video>
       <div class="hero__shade"></div>
       <div class="loadbar" aria-hidden="true"></div>
 
       <div class="slide" aria-label="Good Brews, Great Vibes">
       <div class="stage">
+        <div class="bg bg--blue"></div><div class="bg bg--brown"></div><div class="bg bg--green"></div>
+        <div class="beans beans--back" aria-hidden="true"></div>
         <div class="leaves leaves--back" aria-hidden="true"></div>
-        <img class="cup" src="assets/teacup.webp" width="877" height="900" alt="" aria-hidden="true">
+        <img class="cup cup--tea" src="assets/teacup.webp" width="877" height="900" alt="" aria-hidden="true">
+        <img class="cup cup--coffee" src="assets/coffeecup.webp" width="900" height="780" alt="" aria-hidden="true">
 
         <div class="copy">
           <h1>
@@ -77,6 +80,7 @@
           <li class="pack pack--kaapi" data-name="Kaapi"><img src="assets/kaapi.webp" width="520" height="700" alt="Eastea Kaapi coffee sachet"><a class="plus" href="#" aria-label="Quick view"><svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></a></li>
           <li class="pack pack--harmony" data-name="Harmony Tea"><img src="assets/harmony.webp" width="524" height="700" alt="Eastea Harmony premium tea blend packet"><a class="plus" href="#" aria-label="Quick view"><svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></a></li>
         </ul>
+        <div class="beans beans--front" aria-hidden="true"></div>
         <div class="leaves leaves--front" aria-hidden="true"></div>
         <button class="next" type="button" aria-label="Show next product"><span class="next__a"><svg viewBox="0 0 60 24" width="44" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h54M46 3l10 9-10 9"/></svg><svg viewBox="0 0 60 24" width="44" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h54M46 3l10 9-10 9"/></svg></span></button>
       </div>
@@ -92,6 +96,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="hero.js?v=20261103e"></script>
+<script src="hero.js?v=20261103f"></script>
 </body>
 </html>
