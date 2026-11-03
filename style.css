@@ -182,3 +182,6 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px
 .toast.show{opacity:1;transform:none}
 .toast i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#f2eb49;color:#232323;font-style:normal;font-size:13px}
 @media (max-width:720px){.toast{top:120px}}
+
+.loadbar{position:absolute;left:0;right:0;top:0;height:3px;z-index:8;background:#f2eb49;transform:scaleX(0);transform-origin:left;transition:opacity .5s .2s}
+.loadbar.done{opacity:0}

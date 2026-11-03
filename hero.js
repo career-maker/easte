@@ -2,8 +2,32 @@
 (() => {
   // Scroll-scrubbed 60fps video: short-GOP H.264 so any frame seeks instantly.
   const video = document.querySelector('.hero__video');
-  video.src = matchMedia('(max-width:900px)').matches ? 'assets/video/hero-m.mp4' : 'assets/video/hero.mp4';
-  video.load();
+  // Slow hosts can't seek a streamed file smoothly, so pull the clip into memory first:
+  // 720p (~8 MB) swaps in quickly; on fast desktop connections 1080p (~15 MB) follows silently.
+  const bar = document.querySelector('.loadbar');
+  const small = matchMedia('(max-width:900px)').matches;
+  const getBlob = async (url, onp) => {
+    const r = await fetch(url), len = +r.headers.get('content-length') || 0, rd = r.body.getReader(), parts = [];
+    let got = 0;
+    for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got += value.length; if (onp && len) onp(got / len); }
+    return URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+  };
+  const swap = (url) => new Promise(res => {
+    const t = video.currentTime || 0;
+    video.addEventListener('loadedmetadata', () => { video.currentTime = t; res(); }, { once: true });
+    video.src = url;
+  });
+  (async () => {
+    try {
+      const lq = await getBlob('assets/video/hero-m.mp4', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      await swap(lq);
+    } catch (e) { video.src = 'assets/video/hero-m.mp4'; }
+    if (bar) bar.classList.add('done');
+    const c = navigator.connection || {};
+    if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
+      try { await swap(await getBlob('assets/video/hero.mp4')); } catch (e) {}
+    }
+  })();
   const state = { p: 0 };                             // 0..1 through the clip
   let cur = 0, ticking = false;
   const tick = () => {
