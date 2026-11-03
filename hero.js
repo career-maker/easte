@@ -9,56 +9,31 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   gsap.ticker.lagSmoothing(0);
 }
 (() => {
-  // Scroll-scrubbed 60fps video: short-GOP H.264 so any frame seeks instantly.
-  const video = document.querySelector('.hero__video');
-  // Slow hosts can't seek a streamed file smoothly, so pull the clip into memory first:
-  // 720p (~8 MB) swaps in quickly; on fast desktop connections 1080p (~15 MB) follows silently.
-  const bar = document.querySelector('.loadbar');
-  const small = matchMedia('(max-width:900px)').matches;
-  const getBlob = async (url, onp) => {
-    const r = await fetch(url), len = +r.headers.get('content-length') || 0, rd = r.body.getReader(), parts = [];
-    let got = 0;
-    for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got += value.length; if (onp && len) onp(got / len); }
-    return URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+  // Scroll-scrubbed frame sequence (first 3 s of the clip, 90 frames) with cross-fade between
+  // neighbouring frames, so slow scrolling still looks like continuous video.
+  const N = 90, small = matchMedia('(max-width:900px)').matches, DIR = small ? 'assets/framesm/' : 'assets/frames/';
+  const canvas = document.querySelector('.hero__video'), ctx = canvas.getContext('2d', { alpha: false });
+  const bar = document.querySelector('.loadbar'), bmps = new Array(N);
+  canvas.width = small ? 854 : 1440; canvas.height = small ? 480 : 810;
+  const state = { p: 0 };
+  let cur = 0, loaded = 0, lastKey = '';
+  const nearest = (i) => { for (let d = 0; d < N; d++) { if (bmps[i - d]) return bmps[i - d]; if (bmps[i + d]) return bmps[i + d]; } return null; };
+  const paint = () => {
+    const f = Math.min(N - 1, Math.max(0, cur * (N - 1))), i = Math.floor(f), t = f - i;
+    const key = i + ':' + t.toFixed(3); if (key === lastKey) return; lastKey = key;
+    const A = nearest(i), B = nearest(Math.min(N - 1, i + 1)); if (!A) return;
+    ctx.globalAlpha = 1; ctx.drawImage(A, 0, 0, canvas.width, canvas.height);
+    if (B && B !== A && t > .004) { ctx.globalAlpha = t; ctx.drawImage(B, 0, 0, canvas.width, canvas.height); ctx.globalAlpha = 1; }
   };
-  const swap = (url) => new Promise(res => {
-    const t = video.currentTime || 0;
-    video.addEventListener('loadedmetadata', () => { video.currentTime = t; res(); }, { once: true });
-    video.src = url;
-  });
-  (async () => {
-    try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103q', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
-      await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103q'; }
-    if (bar) bar.classList.add('done');
-    const c = navigator.connection || {};
-    if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103q')); } catch (e) {}
-    }
-  })();
-  const state = { p: 0 };                             // 0..1 through the clip
-  let tgt = 0;
-  // Forward scroll: let the decoder PLAY and steer its playbackRate toward the scroll position
-  // (continuous frames, no seek stalls). Backward / big jumps: seek (clip is all-intra, so it is instant).
-  const tick = () => {
-    const d = video.duration;
-    if (d) {
-      const target = state.p * (d - .05);
-      tgt += (target - tgt) * .2;
-      const diff = tgt - video.currentTime;
-      if (diff > .6 || diff < -.015) {
-        if (!video.paused) video.pause();
-        if (!video.seeking) video.currentTime = tgt;
-      } else if (diff > .01) {
-        video.playbackRate = Math.min(8, Math.max(.1, diff * 14));
-        if (video.paused) video.play().catch(() => {});
-      } else if (!video.paused) video.pause();
-    }
-    requestAnimationFrame(tick);
+  const loop = () => { cur += (state.p - cur) * .2; if (Math.abs(state.p - cur) < .0004) cur = state.p; paint(); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  const loadFrame = async (i) => {
+    try { const r = await fetch(`${DIR}f${String(i).padStart(2, '0')}.webp?v=20261103r`); bmps[i] = await createImageBitmap(await r.blob()); }
+    catch (e) {}
+    loaded++; if (bar) { bar.style.transform = `scaleX(${loaded / N})`; if (loaded >= N) bar.classList.add('done'); }
+    if (i === 0) lastKey = '';
   };
-  requestAnimationFrame(tick);
-  const draw = () => {};
+  (async () => { await loadFrame(0); const order = [...Array(N - 1).keys()].map(k => k + 1); const q = order.slice(); await Promise.all([0, 1, 2, 3, 4, 5].map(async () => { while (q.length) await loadFrame(q.shift()); })); })();
 
   const packs = gsap.utils.toArray('.pack');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -157,7 +132,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   place(false);
 
   if (reduce || !window.ScrollTrigger) {            // static, fully visible fallback
-    video.addEventListener('loadedmetadata', () => { video.currentTime = video.duration * .6; });
+    state.p = 1; cur = 1;
     document.querySelector('.slide').style.opacity = 1;
     fall.forEach(n => gsap.set(n, { rotate: +n.dataset.r }));
     return;
@@ -178,29 +153,29 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
-      trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=600%', fastScrollEnd: true,
+      trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=1030%', fastScrollEnd: true,
       pin: true, scrub: lenis ? true : 0.2, anticipatePin: 1, invalidateOnRefresh: true,
     },
   });
 
   // 1) video frames scrub with a slow push-in
-  tl.to(state, { p: 1, duration: 1.4, ease: 'none' }, 0)
-    .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 1.7, ease: 'power2.in' }, 0)
-    .to('.scroll-hint', { opacity: 0, duration: .4 }, 0.9)
+  tl.to(state, { p: 1, duration: 4.2, ease: 'none' }, 0)
+    .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 5.1, ease: 'power2.in' }, 0)
+    .to('.scroll-hint', { opacity: 0, duration: .4 }, 3.7)
     // 2) blue scene wipes open
-    .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 1.3)
+    .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 4.1)
     // 3) titles, left side
-    .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 1.85)
-    .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 2.0)
-    .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 2.25)
-    .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 2.4)
+    .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 4.65)
+    .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 4.8)
+    .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 5.05)
+    .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 5.2)
     // 4) leaves fall in behind, then packets one by one on the right
-      .to(fall, { opacity: 1, scale: 1, x: 0, y: 0, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 1.35)
-    .to('.pack--green', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.15)
-    .to('.pack--kaapi', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.55)
-    .to('.pack--harmony', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.95)
-    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 2.8)
-    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 3.3)
+      .to(fall, { opacity: 1, scale: 1, x: 0, y: 0, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 4.15)
+    .to('.pack--green', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 4.95)
+    .to('.pack--kaapi', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 5.35)
+    .to('.pack--harmony', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 5.75)
+    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 5.6)
+    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 6.1)
     .to({}, { duration: .6 });                      // hold
 
   // idle motion once the scene is up: packs float, leaves sway
