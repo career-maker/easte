@@ -232,3 +232,7 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px
 /* hide the page scrollbar (the hero is scroll-driven; progress is shown by the rail) */
 html{scrollbar-width:none;-ms-overflow-style:none}
 html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}

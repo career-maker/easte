@@ -1,4 +1,13 @@
 // Hero: scroll-scrubbed video frames, then three packs rise in one by one.
+
+// ---------- smooth (inertial) scrolling: wheel steps are eased instead of jumping ----------
+let lenis = null;
+if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  lenis = new Lenis({ lerp: 0.075, wheelMultiplier: 0.85, smoothWheel: true });   // touch keeps native momentum
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
 (() => {
   // Scroll-scrubbed 60fps video: short-GOP H.264 so any frame seeks instantly.
   const video = document.querySelector('.hero__video');
@@ -19,13 +28,13 @@
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103c', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103d', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103c'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103d'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103c')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103d')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -126,7 +135,7 @@
     defaults: { ease: 'none' },
     scrollTrigger: {
       trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=800%', fastScrollEnd: true,
-      pin: true, scrub: 0.2, anticipatePin: 1, invalidateOnRefresh: true,
+      pin: true, scrub: lenis ? true : 0.2, anticipatePin: 1, invalidateOnRefresh: true,
     },
   });
 
