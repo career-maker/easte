@@ -19,24 +19,32 @@
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103b', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103b'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103b')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
-  let cur = 0, ticking = false;
+  let tgt = 0;
+  // Forward scroll: let the decoder PLAY and steer its playbackRate toward the scroll position
+  // (continuous frames, no seek stalls). Backward / big jumps: seek (clip is all-intra, so it is instant).
   const tick = () => {
     const d = video.duration;
-    if (d && !video.seeking) {
+    if (d) {
       const target = state.p * (d - .05);
-      cur += (target - cur) * .35;                    // light easing between wheel steps
-      if (Math.abs(target - cur) < .004) cur = target;
-      if (Math.abs(video.currentTime - cur) > .004) video.currentTime = cur;
+      tgt += (target - tgt) * .2;
+      const diff = tgt - video.currentTime;
+      if (diff > .6 || diff < -.015) {
+        if (!video.paused) video.pause();
+        if (!video.seeking) video.currentTime = tgt;
+      } else if (diff > .01) {
+        video.playbackRate = Math.min(8, Math.max(.1, diff * 14));
+        if (video.paused) video.play().catch(() => {});
+      } else if (!video.paused) video.pause();
     }
     requestAnimationFrame(tick);
   };
@@ -105,7 +113,8 @@
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  gsap.set(leafEls, { rotate: (i, t) => +t.dataset.r - 40, y: -140, opacity: 0, scale: .8 });
+  gsap.set(leafEls, { rotate: (i, t) => +t.dataset.r - 120, xPercent: (i) => 260 + i * 40, y: (i) => (i % 2 ? -80 : 80), opacity: 0, scale: .8 });
+  gsap.set('.chapters p', { opacity: 0, y: 40 });
   gsap.set('.cup', { opacity: 0, y: 160, rotate: -8 });
   gsap.set(packs, { opacity: 0, y: 240, scale: .88 });
   gsap.set('.pack--harmony', { y: 0, x: 220 });
@@ -123,8 +132,16 @@
 
   // 1) video frames scrub with a slow push-in
   tl.to(state, { p: 1, duration: 2.8, ease: 'none' }, 0)
-    .to('.hero__video', { scale: 1.06, duration: 3.6 }, 0)
-    .to('.scroll-hint', { opacity: 0, duration: .15 }, .05)
+    .fromTo('.hero__video', { scale: 1 }, { scale: 1.3, duration: 3.3, ease: 'power2.in' }, 0)
+    .to('.rail i', { scaleY: 1, duration: 2.8, ease: 'none' }, 0)
+    .to('.rail', { opacity: 0, duration: .3 }, 2.6)
+    .to('.scroll-hint', { opacity: 0, duration: .4 }, 2.3)
+    .to('.chapters p:nth-child(1)', { opacity: 1, y: 0, duration: .35, ease: 'power3.out' }, .15)
+    .to('.chapters p:nth-child(1)', { opacity: 0, y: -30, duration: .3 }, .85)
+    .to('.chapters p:nth-child(2)', { opacity: 1, y: 0, duration: .35, ease: 'power3.out' }, 1.05)
+    .to('.chapters p:nth-child(2)', { opacity: 0, y: -30, duration: .3 }, 1.65)
+    .to('.chapters p:nth-child(3)', { opacity: 1, y: 0, duration: .35, ease: 'power3.out' }, 1.85)
+    .to('.chapters p:nth-child(3)', { opacity: 0, y: -30, duration: .3 }, 2.45)
     // 2) blue scene wipes open
     .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 2.7)
     .to('.hero__arc', { opacity: 1, duration: .4 }, 3.1)
@@ -134,7 +151,7 @@
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 3.65)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 3.8)
     // 4) leaves fall in behind, then packets one by one on the right
-    .to(leafEls, { y: 0, opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: .9, stagger: .05, ease: 'power2.out' }, 3.3)
+    .to(leafEls, { xPercent: 0, y: 0, opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1, stagger: .06, ease: 'power3.out' }, 2.75)
     .to('.pack--green', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 3.55)
     .to('.pack--kaapi', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 3.95)
     .to('.pack--harmony', { opacity: 1, x: 0, scale: 1, duration: .6, ease: 'power3.out' }, 4.35)
@@ -208,4 +225,20 @@
   addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
   addEventListener('resize', () => { if (innerWidth > 1100) set(false); });
   menu.addEventListener('click', e => { if (e.target.closest('nav a')) set(false); });
+})();
+
+
+// ---------- premium button interaction: fill blooms from the pointer, label drifts toward it ----------
+(() => {
+  if (!matchMedia('(hover:hover)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.btn').forEach(b => {
+    const label = b.querySelector('.roll');
+    const qx = gsap.quickTo(label, 'x', { duration: .5, ease: 'power3.out' }), qy = gsap.quickTo(label, 'y', { duration: .5, ease: 'power3.out' });
+    b.addEventListener('pointermove', e => {
+      const r = b.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      b.style.setProperty('--x', x + 'px'); b.style.setProperty('--y', y + 'px');
+      qx((x - r.width / 2) * .08); qy((y - r.height / 2) * .12);
+    });
+    b.addEventListener('pointerleave', () => { qx(0); qy(0); });
+  });
 })();
