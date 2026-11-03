@@ -84,7 +84,7 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:48px
 .pack--harmony{left:calc(1724*var(--u));top:calc(301*var(--u));width:calc(191*var(--u))}
 .plus{position:absolute;right:calc(14*var(--u));top:calc(-10*var(--u));display:grid;place-items:center;width:calc(64*var(--u));height:calc(64*var(--u));min-width:34px;min-height:34px;border-radius:50%;background:rgba(255,255,255,.3);opacity:0;pointer-events:none;transition:opacity .3s,background .3s}
 .pack.is-main .plus{opacity:1;pointer-events:auto}
-.next{position:absolute;z-index:6;left:calc(1530*var(--u));top:calc(690*var(--u));display:grid;place-items:center;width:calc(124*var(--u));height:calc(124*var(--u));min-width:54px;min-height:54px;border:0;border-radius:50%;background:rgba(255,255,255,.26);cursor:pointer;transition:background .3s,transform .3s var(--ease)}
+.next{position:absolute;z-index:6;left:calc(1560*var(--u));top:calc(712*var(--u));display:grid;place-items:center;width:calc(124*var(--u));height:calc(124*var(--u));min-width:54px;min-height:54px;border:0;border-radius:50%;background:rgba(255,255,255,.26);cursor:pointer;transition:background .3s,transform .3s var(--ease)}
 .next svg{width:calc(44*var(--u));min-width:26px;height:auto;flex:none}
 
 .scroll-hint{position:absolute;left:50%;bottom:calc(var(--arc) + 18px);transform:translateX(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px;color:#fff;font:500 12px/1 var(--font);letter-spacing:.14em;text-transform:uppercase}
@@ -256,3 +256,8 @@ html.lenis,html.lenis body{height:auto}
 .slide:not([data-theme=blue]) .cup--coffee{visibility:visible}
 .pack img{transition:filter .6s}
 .slide[data-theme=brown] .next,.slide[data-theme=green] .next{background:rgba(255,255,255,.2)}
+
+/* leaves & beans drift as if in wind */
+.leaves img,.beans img{animation:wind var(--wd,4s) ease-in-out var(--wdl,0s) infinite alternate}
+@keyframes wind{0%{translate:0 0;rotate:0deg}50%{translate:var(--wx,12px) var(--wy,8px);rotate:var(--wr,6deg)}100%{translate:calc(var(--wx,12px)*-.7) calc(var(--wy,8px)*-1);rotate:calc(var(--wr,6deg)*-1)}}
+@media (prefers-reduced-motion:reduce){.leaves img,.beans img{animation:none}}

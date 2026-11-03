@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103f', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103g', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103f'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103g'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103f')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103g')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -92,13 +92,22 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     return n;
   });
   const fall = leafEls.concat(beanEls);
+  fall.forEach((n, i) => {            // per-element wind parameters (CSS animation, runs on the compositor)
+    const dir = i % 2 ? 1 : -1;
+    n.style.setProperty('--wx', dir * (10 + (i * 7) % 22) + 'px');
+    n.style.setProperty('--wy', (6 + (i * 5) % 16) * (i % 3 ? 1 : -1) + 'px');
+    n.style.setProperty('--wr', dir * (4 + (i * 3) % 9) + 'deg');
+    n.style.setProperty('--wd', (3.2 + (i % 5) * .7) + 's');
+    n.style.setProperty('--wdl', (-i * .55) + 's');
+  });
   const slideEl = document.querySelector('.slide');
   const THEMES = ['blue', 'brown', 'green'];
 
   // slider: three slots, the big arrow rotates the packs through them
   const mobile = () => matchMedia('(max-width:900px) and (min-height:540px), (max-width:900px) and (orientation:portrait)').matches;
   const ASP = [1.505, 1.346, 1.336];                 // image height/width per pack
-  const slotsD = [[1000, 167, 384], [1438, 278, 268], [1724, 301, 191]];
+  const slotsD = [[980, 140, 480], [1500, 330, 262], [1762, 398, 140]];
+  const BLUR = [0, 3, 5], DIM = [1, .88, .8];
   let order = [0, 1, 2];                              // order[slot] = pack index
   const slotsFor = () => {
     const cr = document.querySelector('.chrome').offsetHeight;
@@ -121,8 +130,9 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
       packs[pi].classList.toggle('is-main', s === 0);
       if (s === 0) slideEl.dataset.theme = THEMES[pi];
       packs[pi].style.zIndex = 3 - s;
-      if (animate) gsap.to(packs[pi], { ...t, duration: .8, ease: 'power3.inOut', overwrite: 'auto' });
-      else gsap.set(packs[pi], t);
+      const im = packs[pi].querySelector('img'), f = { filter: `blur(${BLUR[s]}px) brightness(${DIM[s]})` };
+      if (animate) { gsap.to(packs[pi], { ...t, duration: .8, ease: 'power3.inOut', overwrite: 'auto' }); gsap.to(im, { ...f, duration: .8, ease: 'power3.inOut' }); }
+      else { gsap.set(packs[pi], t); gsap.set(im, f); }
     });
   };
   document.querySelector('.next').addEventListener('click', () => { order = [order[1], order[2], order[0]]; place(true); });
@@ -180,7 +190,6 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
 
   // idle motion once the scene is up: packs float, leaves sway
   packs.forEach((p, i) => gsap.to(p.querySelector('img'), { y: -12, duration: 2.4 + i * .3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: i * .4 }));
-  fall.forEach((n, i) => gsap.to(n, { x: i % 2 ? 14 : -14, duration: 3 + (i % 4) * .5, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: i * .15 }));
 })();
 
 
