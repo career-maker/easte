@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103o', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103q', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103o'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103q'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103o')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103q')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -91,7 +91,21 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     document.querySelector('.beans--' + layer).appendChild(n);
     return n;
   });
-  const fall = leafEls.concat(beanEls);
+  // fresh green leaves for the Harmony (green) theme: [file, x, y, width, rotation, layer]
+  const G = [
+    [0,30,40,230,-20,'back'],[10,380,10,200,25,'back'],[13,640,120,150,-30,'back'],[6,780,60,120,40,'back'],
+    [29,60,610,260,15,'back'],[14,860,720,190,20,'back'],[12,1560,40,170,35,'front'],
+    [21,1650,640,300,-25,'front'],[25,1500,360,150,50,'back'],[11,1790,260,170,-15,'front'],
+    [9,1330,20,110,-40,'back'],[16,1010,820,140,30,'front'],
+  ];
+  const gEls = G.map(([f, x, y, w, r, layer]) => {
+    const n = new Image(); n.src = `assets/gleaves/g${String(f).padStart(2, '0')}.webp`; n.alt = ''; n.className = 'g';
+    Object.assign(n.style, { left: `calc(${x}*var(--u))`, top: `calc(${y}*var(--u))`, width: `calc(${w}*var(--u))` });
+    n.dataset.r = r;
+    document.querySelector('.leaves--' + layer).appendChild(n);
+    return n;
+  });
+  const fall = leafEls.concat(beanEls, gEls);
   fall.forEach((n, i) => {            // per-element wind parameters (CSS animation, runs on the compositor)
     const dir = i % 2 ? 1 : -1;
     n.style.setProperty('--wx', dir * (10 + (i * 7) % 22) + 'px');
@@ -151,9 +165,10 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
 
   gsap.registerPlugin(ScrollTrigger);
   // leaves burst outward from the scene centre; packs pop in (zoom-in overshoot, then settle) at their own centre
-  const centreOrigin = () => { const r = slideEl.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; fall.forEach(n => { const b = n.getBoundingClientRect(); gsap.set(n, { transformOrigin: `${cx - (b.left - (+gsap.getProperty(n, 'x') || 0))}px ${cy - b.top}px` }); }); };
+  // start each piece at the scene centre (offset), then fly out to its own spot
+  const toCentre = () => { const W = slideEl.clientWidth / 2, Hh = slideEl.clientHeight / 2; fall.forEach(n => { const w = n.offsetWidth, h = n.offsetHeight; gsap.set(n, { x: W - (n.offsetLeft + w / 2), y: Hh - (n.offsetTop + h / 2) }); }); };
   gsap.set(fall, { rotate: (i, t) => +t.dataset.r - 50, opacity: 0, scale: 0 });
-  centreOrigin(); addEventListener('resize', centreOrigin);
+  toCentre();
   gsap.set('.cup--tea, .cup--coffee', { opacity: 0, y: 160, rotate: -8 });
   gsap.set(packs, { opacity: 0, scale: .15 });
   gsap.set(['.l1 .t', '.l2 .t', '.splash'], { yPercent: 40, opacity: 0 });
@@ -180,7 +195,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 2.25)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 2.4)
     // 4) leaves fall in behind, then packets one by one on the right
-      .to(fall, { opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 1.35)
+      .to(fall, { opacity: 1, scale: 1, x: 0, y: 0, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 1.35)
     .to('.pack--green', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.15)
     .to('.pack--kaapi', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.55)
     .to('.pack--harmony', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.95)
