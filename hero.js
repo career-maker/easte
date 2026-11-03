@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103j', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103k', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103j'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103k'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103j')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103k')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -151,10 +151,12 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  gsap.set(fall, { rotate: (i, t) => +t.dataset.r - 120, xPercent: (i) => 260 + i * 40, y: (i) => (i % 2 ? -80 : 80), opacity: 0, scale: .8 });
+  // leaves burst outward from the scene centre; packs pop in (zoom-in overshoot, then settle) at their own centre
+  const centreOrigin = () => { const r = slideEl.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; fall.forEach(n => { const b = n.getBoundingClientRect(); gsap.set(n, { transformOrigin: `${cx - (b.left - (+gsap.getProperty(n, 'x') || 0))}px ${cy - b.top}px` }); }); };
+  gsap.set(fall, { rotate: (i, t) => +t.dataset.r - 50, opacity: 0, scale: 0 });
+  centreOrigin(); addEventListener('resize', centreOrigin);
   gsap.set('.cup--tea, .cup--coffee', { opacity: 0, y: 160, rotate: -8 });
-  gsap.set(packs, { opacity: 0, y: 240, scale: .88 });
-  gsap.set('.pack--harmony', { y: 0, x: 220 });
+  gsap.set(packs, { opacity: 0, scale: .15 });
   gsap.set(['.l1 .t', '.l2 .t', '.splash'], { yPercent: 40, opacity: 0 });
   gsap.set(['.sub', '.btn'], { y: 30, opacity: 0 });
   gsap.set('.next', { scale: 0, opacity: 0 });
@@ -180,10 +182,10 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 2.25)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 2.4)
     // 4) leaves fall in behind, then packets one by one on the right
-    .to(fall, { xPercent: 0, y: 0, opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1, stagger: .06, ease: 'power3.out' }, 1.35)
-    .to('.pack--green', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 2.15)
-    .to('.pack--kaapi', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 2.55)
-    .to('.pack--harmony', { opacity: 1, x: 0, scale: 1, duration: .6, ease: 'power3.out' }, 2.95)
+      .to(fall, { opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 1.35)
+    .to('.pack--green', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.15)
+    .to('.pack--kaapi', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.55)
+    .to('.pack--harmony', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 2.95)
     .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 2.8)
     .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 3.3)
     .to({}, { duration: .6 });                      // hold

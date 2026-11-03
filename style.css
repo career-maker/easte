@@ -26,7 +26,7 @@ ul{list-style:none}
 .site-header{position:relative;height:var(--head-h);background:#fff;display:flex;align-items:center;padding:0 var(--pad) calc(10*var(--hu));gap:0}
 .logo{flex:none;margin:-3px 0 0 -4px}
 .logo img{width:calc(252*var(--hu));height:auto}
-nav{align-self:stretch;margin-bottom:calc(-10*var(--hu));display:flex;gap:clamp(20px,2.86vw,55px);margin-left:clamp(32px,8.5vw,163px)}
+nav{align-self:stretch;margin-bottom:calc(-10*var(--hu));display:flex;gap:calc(55*var(--hu));margin-left:calc(183*var(--hu))}
 nav a{position:relative;font-size:calc(18*var(--hu));font-weight:500;letter-spacing:.025em;line-height:calc(106*var(--hu));padding-bottom:calc(10*var(--hu));transition:color .25s var(--ease)}
 nav a:hover{color:var(--accent)}
 nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc(48*var(--hu));height:calc(6*var(--hu));margin-left:calc(-24*var(--hu));background:var(--accent);border-radius:3px 3px 0 0}
@@ -96,7 +96,6 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
 /* ---------- responsive ---------- */
 .menu{display:contents}
 .menu-btn{display:none}
-@media (max-width:1500px){nav{margin-left:2.5vw;gap:2.2vw}}
 
 /* tablet & small laptop: collapsible menu */
 @media (max-width:1100px){
