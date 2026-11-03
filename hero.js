@@ -28,7 +28,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   const loop = () => { cur += (state.p - cur) * .2; if (Math.abs(state.p - cur) < .0004) cur = state.p; paint(); requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
   const loadFrame = async (i) => {
-    try { const r = await fetch(`${DIR}f${String(i).padStart(2, '0')}.webp?v=20261103r`); bmps[i] = await createImageBitmap(await r.blob()); }
+    try { const r = await fetch(`${DIR}f${String(i).padStart(2, '0')}.webp?v=20261103s`); bmps[i] = await createImageBitmap(await r.blob()); }
     catch (e) {}
     loaded++; if (bar) { bar.style.transform = `scaleX(${loaded / N})`; if (loaded >= N) bar.classList.add('done'); }
     if (i === 0) lastKey = '';
@@ -133,7 +133,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
 
   if (reduce || !window.ScrollTrigger) {            // static, fully visible fallback
     state.p = 1; cur = 1;
-    document.querySelector('.slide').style.opacity = 1;
+    document.querySelector('.bgfade').style.opacity = 1;
     fall.forEach(n => gsap.set(n, { rotate: +n.dataset.r }));
     return;
   }
@@ -161,20 +161,20 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   // 1) video frames scrub with a slow push-in
   tl.to(state, { p: 1, duration: 4.2, ease: 'none' }, 0)
     .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 5.1, ease: 'power2.in' }, 0)
-    .to('.scroll-hint', { opacity: 0, duration: .4 }, 3.7)
+    .to('.scroll-hint', { opacity: 0, duration: .4 }, 2.6)
     // 2) blue scene wipes open
-    .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 4.1)
+    .to('.bgfade', { opacity: 1, duration: .9, ease: 'power1.inOut' }, 4.0)
     // 3) titles, left side
     .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 4.65)
     .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 4.8)
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 5.05)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 5.2)
     // 4) leaves fall in behind, then packets one by one on the right
-      .to(fall, { opacity: 1, scale: 1, x: 0, y: 0, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 4.15)
-    .to('.pack--green', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 4.95)
-    .to('.pack--kaapi', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 5.35)
-    .to('.pack--harmony', { opacity: 1, scale: 1, duration: .8, ease: 'back.out(1.9)' }, 5.75)
-    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 5.6)
+      .to(fall, { opacity: 1, scale: 1, x: 0, y: 0, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 3.6)
+    .to('.pack--green', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 3.0)
+    .to('.pack--kaapi', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 3.4)
+    .to('.pack--harmony', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 3.8)
+    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 4.6)
     .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 6.1)
     .to({}, { duration: .6 });                      // hold
 

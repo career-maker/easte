@@ -58,7 +58,8 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
 /* ---------- slide (end state) ---------- */
 .hero{--u:min(calc(100vw/1920),calc((100svh - var(--chrome))/927));--arc:max(40px,calc(120*var(--u)))}
 .stage{clip-path:inset(-300px -100vw 0 -100vw);position:absolute;top:0;left:50%;width:calc(1920*var(--u));height:calc(927*var(--u));margin-left:calc(-960*var(--u))}
-.slide{position:absolute;inset:0 0 calc(-1*var(--tail)) 0;z-index:2;background:#153f80;opacity:0;will-change:opacity}
+.slide{position:absolute;inset:0 0 calc(-1*var(--tail)) 0;z-index:2}
+.bgfade{position:absolute;inset:0;opacity:0;will-change:opacity}
 .leaves{position:absolute;inset:0;pointer-events:none}
 .leaves img{position:absolute;height:auto;will-change:transform,opacity}
 .leaves--front{z-index:5}
