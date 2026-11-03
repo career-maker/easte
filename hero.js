@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103g', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103h', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103g'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103h'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103g')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103h')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
@@ -162,30 +162,30 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
-      trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=800%', fastScrollEnd: true,
+      trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=600%', fastScrollEnd: true,
       pin: true, scrub: lenis ? true : 0.2, anticipatePin: 1, invalidateOnRefresh: true,
     },
   });
 
   // 1) video frames scrub with a slow push-in
-  tl.to(state, { p: 1, duration: 2.8, ease: 'none' }, 0)
-    .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 3.3, ease: 'power2.in' }, 0)
-    .to('.scroll-hint', { opacity: 0, duration: .4 }, 2.3)
+  tl.to(state, { p: 1, duration: 1.4, ease: 'none' }, 0)
+    .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 1.7, ease: 'power2.in' }, 0)
+    .to('.scroll-hint', { opacity: 0, duration: .4 }, 0.9)
     // 2) blue scene wipes open
-    .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 2.7)
-    .to('.hero__arc', { opacity: 1, duration: .4 }, 3.1)
+    .to('.slide', { opacity: 1, duration: .7, ease: 'power1.inOut' }, 1.3)
+    .to('.hero__arc', { opacity: 1, duration: .4 }, 1.7)
     // 3) titles, left side
-    .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 3.25)
-    .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 3.4)
-    .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 3.65)
-    .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 3.8)
+    .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 1.85)
+    .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 2.0)
+    .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 2.25)
+    .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 2.4)
     // 4) leaves fall in behind, then packets one by one on the right
-    .to(fall, { xPercent: 0, y: 0, opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1, stagger: .06, ease: 'power3.out' }, 2.75)
-    .to('.pack--green', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 3.55)
-    .to('.pack--kaapi', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 3.95)
-    .to('.pack--harmony', { opacity: 1, x: 0, scale: 1, duration: .6, ease: 'power3.out' }, 4.35)
-    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 4.2)
-    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 4.7)
+    .to(fall, { xPercent: 0, y: 0, opacity: 1, scale: 1, rotate: (i, t) => +t.dataset.r, duration: 1, stagger: .06, ease: 'power3.out' }, 1.35)
+    .to('.pack--green', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 2.15)
+    .to('.pack--kaapi', { opacity: 1, y: 0, scale: 1, duration: .6, ease: 'power3.out' }, 2.55)
+    .to('.pack--harmony', { opacity: 1, x: 0, scale: 1, duration: .6, ease: 'power3.out' }, 2.95)
+    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 2.8)
+    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 3.3)
     .to({}, { duration: .6 });                      // hold
 
   // idle motion once the scene is up: packs float, leaves sway

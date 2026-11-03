@@ -244,7 +244,7 @@ html.lenis,html.lenis body{height:auto}
 .bg--green{background:radial-gradient(70% 80% at 55% 45%,#1f9a3c 0%,#0f6e27 50%,#08461a 100%)}
 .slide[data-theme=brown] .bg--blue,.slide[data-theme=green] .bg--blue{opacity:0}
 .slide[data-theme=brown] .bg--brown,.slide[data-theme=green] .bg--green{opacity:1}
-.beans,.leaves{transition:opacity .6s var(--ease);-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.4),#000 13%,#000 87%,rgba(0,0,0,.4));mask-image:linear-gradient(90deg,rgba(0,0,0,.4),#000 13%,#000 87%,rgba(0,0,0,.4))}
+.beans,.leaves{transition:opacity .6s var(--ease)}
 .beans{position:absolute;inset:0;pointer-events:none;opacity:0}
 .beans--front{z-index:5}
 .beans img{position:absolute;height:auto;will-change:transform,opacity}
