@@ -28,13 +28,13 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   });
   (async () => {
     try {
-      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103n', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
+      const lq = await getBlob('assets/video/hero-m.mp4?v=20261103o', p => { if (bar) bar.style.transform = `scaleX(${p})`; });
       await swap(lq);
-    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103n'; }
+    } catch (e) { video.src = 'assets/video/hero-m.mp4?v=20261103o'; }
     if (bar) bar.classList.add('done');
     const c = navigator.connection || {};
     if (!small && !c.saveData && !/2g|3g/.test(c.effectiveType || '')) {
-      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103n')); } catch (e) {}
+      try { await swap(await getBlob('assets/video/hero.mp4?v=20261103o')); } catch (e) {}
     }
   })();
   const state = { p: 0 };                             // 0..1 through the clip
