@@ -46,6 +46,9 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
 .hero__pin{position:relative;height:calc(100svh - var(--chrome));z-index:3}
 .hero__vwrap{position:absolute;inset:0;overflow:hidden;background:#142014}
 .hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform;background:#142014}
+.fly{position:absolute;inset:0;pointer-events:none}
+.fly img{position:absolute;left:50%;top:50%;width:clamp(60px,9vw,170px);height:auto;margin:-4vw 0 0 -4vw;opacity:0;will-change:transform,opacity}
+.intro{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .hero__shade{position:absolute;inset:0;opacity:0;display:none;background:
   radial-gradient(70% 60% at 50% 55%,rgba(8,20,10,.55),rgba(8,20,10,.15) 70%),
   linear-gradient(180deg,rgba(8,20,10,.25),rgba(8,20,10,.55))}
@@ -150,6 +153,8 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
   .plus{width:34px;height:34px;min-width:0;min-height:0;right:0;top:-6px}
   .cup{left:-5vw;top:auto;bottom:calc(var(--arc) - 14px);width:clamp(110px,30vw,200px)}
   .leaves{--u:calc(100vw/1100)}
+  .stage{clip-path:inset(-300px 0 0 0)}                    /* nothing may spill sideways on phones */
+  .leaves img.burst{left:-14vw!important;top:4%!important;width:128vw!important}
   .next{left:auto;top:auto;right:16px;bottom:calc(var(--arc) + 8px);width:52px;height:52px;min-width:0;min-height:0}
   .next svg{width:26px;min-width:0}
 }
@@ -226,11 +231,11 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
 .chapters p{position:absolute;left:0;top:0;opacity:0}
 .rail{position:absolute;right:calc(var(--pad)*.55);top:50%;z-index:3;width:3px;height:min(220px,32vh);transform:translateY(-50%);border-radius:3px;background:rgba(255,255,255,.28);overflow:hidden;pointer-events:none}
 .rail i{display:block;width:100%;height:100%;background:#fff;transform:scaleY(0);transform-origin:top}
-.mouse{position:relative;display:block;width:24px;height:38px;border:2px solid #fff;border-radius:14px;animation:none}
+.mouse{position:relative;display:block;width:24px;height:38px;border:2px solid var(--ink);border-radius:14px;animation:none}
 .scroll-hint span.mouse{height:38px;background:none}
-.mouse i{position:absolute;left:50%;top:7px;width:3px;height:8px;margin-left:-1.5px;border-radius:2px;background:#fff;animation:wheel 1.6s var(--ease) infinite}
+.mouse i{position:absolute;left:50%;top:7px;width:3px;height:8px;margin-left:-1.5px;border-radius:2px;background:var(--ink);animation:wheel 1.6s var(--ease) infinite}
 @keyframes wheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
-.scroll-hint{gap:12px;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.scroll-hint{gap:12px;color:var(--ink)}
 @media (max-width:900px){.scroll-hint{display:flex!important}.chapters{bottom:calc(var(--arc) + 56px)}}
 
 /* hide the page scrollbar (the hero is scroll-driven; progress is shown by the rail) */

@@ -1,4 +1,4 @@
-// Hero: scroll-scrubbed video frames, then three packs rise in one by one.
+// Hero: zoom through the logo into the plantation, then three packs rise in one by one.
 
 // ---------- smooth (inertial) scrolling: wheel steps are eased instead of jumping ----------
 let lenis = null;
@@ -9,31 +9,25 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   gsap.ticker.lagSmoothing(0);
 }
 (() => {
-  // Scroll-scrubbed frame sequence (first 3 s of the clip, 90 frames) with cross-fade between
-  // neighbouring frames, so slow scrolling still looks like continuous video.
-  const N = 90, small = matchMedia('(max-width:900px)').matches, DIR = small ? 'assets/framesm/' : 'assets/frames/';
-  const canvas = document.querySelector('.hero__video'), ctx = canvas.getContext('2d', { alpha: false });
-  const bar = document.querySelector('.loadbar'), bmps = new Array(N);
-  canvas.width = small ? 854 : 1440; canvas.height = small ? 480 : 810;
-  const state = { p: 0 };
-  let cur = 0, loaded = 0, lastKey = '';
-  const nearest = (i) => { for (let d = 0; d < N; d++) { if (bmps[i - d]) return bmps[i - d]; if (bmps[i + d]) return bmps[i + d]; } return null; };
-  const paint = () => {
-    const f = Math.min(N - 1, Math.max(0, cur * (N - 1))), i = Math.floor(f), t = f - i;
-    const key = i + ':' + t.toFixed(3); if (key === lastKey) return; lastKey = key;
-    const A = nearest(i), B = nearest(Math.min(N - 1, i + 1)); if (!A) return;
-    ctx.globalAlpha = 1; ctx.drawImage(A, 0, 0, canvas.width, canvas.height);
-    if (B && B !== A && t > .004) { ctx.globalAlpha = t; ctx.drawImage(B, 0, 0, canvas.width, canvas.height); ctx.globalAlpha = 1; }
+  // Intro: white sheet with the logo punched out; scroll zooms into the logo's thickest stroke until the plantation fills the screen.
+  const cv = document.querySelector('.intro'), cx = cv.getContext('2d'), state = { z: 0 };
+  let logo = null;                                                // Path2D of assets/logo.svg: stays razor sharp at any zoom
+  fetch('assets/logo.svg?v=20261104g').then(r => r.text()).then(t => { logo = new Path2D(/ d="([^"]+)"/.exec(t)[1]); draw(); });
+  const FX = 385, FY = 149, FR = 12.4, LW = 760, LH = 225;       // focus = thickest stroke near the logo centre (inscribed radius FR px): zooming into it fills the screen with plantation
+  const draw = () => {
+    if (!logo) return;
+    const d = Math.min(devicePixelRatio || 1, 2), W = cv.clientWidth, H = cv.clientHeight;
+    if (cv.width !== Math.round(W * d)) { cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
+    const k = (W < 900 ? W * .74 : Math.min(W * .34, H * .62 * LW / LH)) / LW, z = state.z, s = Math.pow(Math.hypot(W, H) / 2 / (FR * k) * 1.08, z), g = Math.min(1, z * 1.7);
+    const ix = W / 2 - LW * k / 2 + FX * k, iy = H / 2 - LH * k / 2 + FY * k;     // focus point, resting position
+    const ax = ix + (W / 2 - ix) * g, ay = iy + (H / 2 - iy) * g;                  // glides to screen centre early, so the zoom stays centred
+    cx.setTransform(d, 0, 0, d, 0, 0); cx.globalCompositeOperation = 'source-over'; cx.clearRect(0, 0, W, H);
+    cx.fillStyle = '#fff'; cx.fillRect(0, 0, W, H);
+    cx.setTransform(d * k * s, 0, 0, d * k * s, d * (ax - FX * k * s), d * (ay - FY * k * s));
+    cx.globalCompositeOperation = 'destination-out'; cx.fillStyle = '#000'; cx.fill(logo, 'evenodd');   // logo strokes = window onto the plantation
   };
-  const loop = () => { cur += (state.p - cur) * .2; if (Math.abs(state.p - cur) < .0004) cur = state.p; paint(); requestAnimationFrame(loop); };
-  requestAnimationFrame(loop);
-  const loadFrame = async (i) => {
-    try { const r = await fetch(`${DIR}f${String(i).padStart(2, '0')}.webp?v=20261103s`); bmps[i] = await createImageBitmap(await r.blob()); }
-    catch (e) {}
-    loaded++; if (bar) { bar.style.transform = `scaleX(${loaded / N})`; if (loaded >= N) bar.classList.add('done'); }
-    if (i === 0) lastKey = '';
-  };
-  (async () => { await loadFrame(0); const order = [...Array(N - 1).keys()].map(k => k + 1); const q = order.slice(); await Promise.all([0, 1, 2, 3, 4, 5].map(async () => { while (q.length) await loadFrame(q.shift()); })); })();
+  addEventListener('resize', draw);
+  window.__introDraw = draw; window.__introState = state;
 
   const packs = gsap.utils.toArray('.pack');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -66,15 +60,10 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     document.querySelector('.beans--' + layer).appendChild(n);
     return n;
   });
-  // fresh green leaves for the Harmony (green) theme: [file, x, y, width, rotation, layer]
-  const G = [
-    [0,30,40,230,-20,'back'],[10,380,10,200,25,'back'],[13,640,120,150,-30,'back'],[6,780,60,120,40,'back'],
-    [29,60,610,260,15,'back'],[14,860,720,190,20,'back'],[12,1560,40,170,35,'front'],
-    [21,1650,640,300,-25,'front'],[25,1500,360,150,50,'back'],[11,1790,260,170,-15,'front'],
-    [9,1330,20,110,-40,'back'],[16,1010,820,140,30,'front'],
-  ];
+  // Harmony (green) theme: one big leaf burst swirling round the packs (mirrored art, so it gathers on the right)
+  const G = [['burstr', 640, -170, 1300, 0, 'back']];
   const gEls = G.map(([f, x, y, w, r, layer]) => {
-    const n = new Image(); n.src = `assets/gleaves/g${String(f).padStart(2, '0')}.webp`; n.alt = ''; n.className = 'g';
+    const n = new Image(); n.src = `assets/gleaves/${f}.webp?v=20261104g`; n.alt = ''; n.className = 'g burst';
     Object.assign(n.style, { left: `calc(${x}*var(--u))`, top: `calc(${y}*var(--u))`, width: `calc(${w}*var(--u))` });
     n.dataset.r = r;
     document.querySelector('.leaves--' + layer).appendChild(n);
@@ -132,7 +121,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   place(false);
 
   if (reduce || !window.ScrollTrigger) {            // static, fully visible fallback
-    state.p = 1; cur = 1;
+    cv.style.display = 'none';
     document.querySelector('.bgfade').style.opacity = 1;
     fall.forEach(n => gsap.set(n, { rotate: +n.dataset.r }));
     return;
@@ -153,29 +142,38 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
-      trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=1030%', fastScrollEnd: true,
+      trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=950%', fastScrollEnd: true,
       pin: true, scrub: lenis ? true : 0.2, anticipatePin: 1, invalidateOnRefresh: true,
     },
   });
 
-  // 1) video frames scrub with a slow push-in
-  tl.to(state, { p: 1, duration: 4.2, ease: 'none' }, 0)
-    .fromTo('.hero__video', { scale: 1 }, { scale: 1.15, duration: 5.1, ease: 'power2.in' }, 0)
-    .to('.scroll-hint', { opacity: 0, duration: .4 }, 2.6)
-    // 2) blue scene wipes open
-    .to('.bgfade', { opacity: 1, duration: .9, ease: 'power1.inOut' }, 4.0)
-    // 3) titles, left side
-    .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 4.65)
-    .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 4.8)
-    .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 5.05)
-    .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 5.2)
-    // 4) leaves fall in behind, then packets one by one on the right
-      .to(fall, { opacity: 1, scale: 1, x: 0, y: 0, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 3.6)
-    .to('.pack--green', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 3.0)
-    .to('.pack--kaapi', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 3.4)
-    .to('.pack--harmony', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 3.8)
-    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 4.6)
-    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 6.1)
+  // fly-by leaves around the screen centre, so the plantation feels like it is being travelled through
+  const flyEls = ['g00', 'g10', 'g21', 'g06', 'g13', 'g25', 'g29', 'g12', 'g14', 'g16'].map((f, i) => {
+    const n = new Image(); n.src = `assets/gleaves/${f}.webp`; n.alt = ''; if (i % 3 == 0) n.style.filter = 'blur(5px)';
+    document.querySelector('.fly').appendChild(n); return n;
+  });
+  const ang = i => i * 2.399 + .5;                                  // golden-angle spread
+
+  tl.to(state, { z: 1, duration: 2.6, ease: 'power1.in', onUpdate: draw }, 0)        // 1) zoom through the logo
+    .to('.intro', { opacity: 0, duration: .3, ease: 'none' }, 2.45)
+    .to('.scroll-hint', { opacity: 0, duration: .3 }, .35)
+    .fromTo('.hero__video', { scale: 1.04 }, { scale: 1.3, duration: 6, ease: 'power1.inOut' }, 0)   // 2) slow push through the plantation
+    .fromTo(flyEls, { x: i => Math.cos(ang(i)) * innerWidth * .03, y: i => Math.sin(ang(i)) * innerHeight * .03, scale: .3, rotate: i => i * 37, opacity: 0 },
+      { x: i => Math.cos(ang(i)) * innerWidth * .75, y: i => Math.sin(ang(i)) * innerHeight * .8, scale: i => 2 + (i % 3), rotate: i => i * 37 + 70, duration: 2.6, stagger: .28, ease: 'power2.in' }, 1.8)
+    .to(flyEls, { opacity: 1, duration: .5, stagger: .28, ease: 'none' }, 1.8)
+    .to(flyEls, { opacity: 0, duration: .4, stagger: .28, ease: 'none' }, 3.9)
+    // 3) blue scene wipes open, then packs, titles
+    .to('.bgfade', { opacity: 1, duration: .9, ease: 'power1.inOut' }, 5.2)
+    .to('.pack--green', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 4.9)
+    .to('.pack--kaapi', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 5.3)
+    .to('.pack--harmony', { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.5)' }, 5.7)
+    .to(fall, { opacity: 1, scale: 1, x: 0, y: 0, rotate: (i, t) => +t.dataset.r, duration: 1.1, stagger: .05, ease: 'back.out(1.4)' }, 5.5)
+    .to('.cup--tea, .cup--coffee', { opacity: 1, y: 0, rotate: 0, duration: .7, ease: 'power3.out' }, 6.5)
+    .to(['.l1 .t', '.l1 .splash'], { yPercent: 0, opacity: 1, duration: .45, ease: 'power3.out' }, 6.5)
+    .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 6.65)
+    .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 6.9)
+    .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 7.05)
+    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 7.9)
     .to({}, { duration: .6 });                      // hold
 
   // idle motion once the scene is up: packs float, leaves sway
