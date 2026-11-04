@@ -146,6 +146,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   gsap.set(['.l1 .t', '.l2 .t', '.splash'], { yPercent: 40, opacity: 0 });
   gsap.set(['.sub', '.btn'], { y: 30, opacity: 0 });
   gsap.set('.next', { scale: 0, opacity: 0 });
+  gsap.set('.chrome', { autoAlpha: 0 });            // header hidden while the logo intro plays
 
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
@@ -183,6 +184,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 6.9)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 7.05)
     .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 7.9)
+    .to('.chrome', { autoAlpha: 1, duration: .5, ease: 'power2.out' }, 7.9)   // header returns when the scroll sequence is done
     .to({}, { duration: .6 });                      // hold
 
   // idle motion once the scene is up: packs float, leaves sway
