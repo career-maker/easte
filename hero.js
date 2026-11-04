@@ -146,12 +146,19 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   gsap.set(['.l1 .t', '.l2 .t', '.splash'], { yPercent: 40, opacity: 0 });
   gsap.set(['.sub', '.btn'], { y: 30, opacity: 0 });
   gsap.set('.next', { scale: 0, opacity: 0 });
-  gsap.set('.chrome', { autoAlpha: 0 });            // header hidden while the logo intro plays
+  // header: hidden during the intro; when the scroll sequence ends it glides down, then its pieces rise in one by one
+  const parts = gsap.utils.toArray('.logo, nav a, .search, .actions a, .menu-btn');
+  gsap.set('.chrome', { autoAlpha: 0 }); gsap.set('.topbar, .site-header', { yPercent: -100 }); gsap.set(parts, { y: -18, opacity: 0 });
+  const hdr = gsap.timeline({ paused: true, defaults: { ease: 'expo.out' } })
+    .set('.chrome', { autoAlpha: 1 })
+    .to('.topbar', { yPercent: 0, duration: 1 }, 0)
+    .to('.site-header', { yPercent: 0, duration: 1.1 }, .08)
+    .to(parts, { y: 0, opacity: 1, duration: .9, stagger: .06, ease: 'power3.out' }, .35);
 
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
-      trigger: '.hero__pin', start: () => 'top ' + document.querySelector('.chrome').offsetHeight + 'px', end: '+=950%', fastScrollEnd: true,
+      trigger: '.hero__pin', start: 'top top', end: '+=950%', fastScrollEnd: true,
       pin: true, scrub: lenis ? true : 0.2, anticipatePin: 1, invalidateOnRefresh: true,
     },
   });
@@ -184,7 +191,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 6.9)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 7.05)
     .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 7.9)
-    .to('.chrome', { autoAlpha: 1, duration: .5, ease: 'power2.out' }, 7.9)   // header returns when the scroll sequence is done
+    .add(() => { tl.scrollTrigger.direction > 0 ? hdr.timeScale(1).play() : hdr.timeScale(1.6).reverse(); }, 7.9)   // header returns when the scroll sequence is done
     .to({}, { duration: .6 });                      // hold
 
   // idle motion once the scene is up: packs float, leaves sway
