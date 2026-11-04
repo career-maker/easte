@@ -12,7 +12,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   // Intro: white sheet with the logo punched out; scroll zooms into the logo's thickest stroke until the plantation fills the screen.
   const cv = document.querySelector('.intro'), cx = cv.getContext('2d'), state = { z: 0 };
   let logo = null;                                                // Path2D of assets/logo.svg: stays razor sharp at any zoom
-  fetch('assets/logo.svg?v=20261104g').then(r => r.text()).then(t => { logo = new Path2D(/ d="([^"]+)"/.exec(t)[1]); draw(); });
+  fetch('assets/logo.svg?v=20261104i').then(r => r.text()).then(t => { logo = new Path2D(/ d="([^"]+)"/.exec(t)[1]); draw(); });
   const FX = 385, FY = 149, FR = 12.4, LW = 760, LH = 225;       // focus = thickest stroke near the logo centre (inscribed radius FR px): zooming into it fills the screen with plantation
   const draw = () => {
     if (!logo) return;
@@ -60,16 +60,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     document.querySelector('.beans--' + layer).appendChild(n);
     return n;
   });
-  // Harmony (green) theme: one big leaf burst swirling round the packs (mirrored art, so it gathers on the right)
-  const G = [['burstr', 640, -170, 1300, 0, 'back']];
-  const gEls = G.map(([f, x, y, w, r, layer]) => {
-    const n = new Image(); n.src = `assets/gleaves/${f}.webp?v=20261104g`; n.alt = ''; n.className = 'g burst';
-    Object.assign(n.style, { left: `calc(${x}*var(--u))`, top: `calc(${y}*var(--u))`, width: `calc(${w}*var(--u))` });
-    n.dataset.r = r;
-    document.querySelector('.leaves--' + layer).appendChild(n);
-    return n;
-  });
-  const fall = leafEls.concat(beanEls, gEls);
+  const fall = leafEls.concat(beanEls);
   fall.forEach((n, i) => {            // per-element wind parameters (CSS animation, runs on the compositor)
     const dir = i % 2 ? 1 : -1;
     n.style.setProperty('--wx', dir * (10 + (i * 7) % 22) + 'px');
