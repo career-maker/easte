@@ -29,6 +29,23 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   addEventListener('resize', draw);
   window.__introDraw = draw; window.__introState = state;
 
+  // Background: scroll-scrubbed frame sequence (90 frames) with cross-fade between neighbours, so it plays like video.
+  const N = 90, DIR = matchMedia('(max-width:900px)').matches ? 'assets/framesm/' : 'assets/frames/';
+  const vc = document.querySelector('.hero__video'), vx = vc.getContext('2d', { alpha: false }), bmps = new Array(N), vs = { p: 0 };
+  vc.width = 1280; vc.height = 720;
+  let lastKey = '';
+  const nearest = i => { for (let d = 0; d < N; d++) { if (bmps[i - d]) return bmps[i - d]; if (bmps[i + d]) return bmps[i + d]; } return null; };
+  const paint = () => {
+    const f = Math.min(N - 1, Math.max(0, vs.p * (N - 1))), i = Math.floor(f), t = f - i, key = i + ':' + t.toFixed(3);
+    if (key === lastKey) return; const A = nearest(i); if (!A) return; lastKey = key;
+    const B = nearest(Math.min(N - 1, i + 1));
+    vx.globalAlpha = 1; vx.drawImage(A, 0, 0, vc.width, vc.height);
+    if (B && B !== A && t > .004) { vx.globalAlpha = t; vx.drawImage(B, 0, 0, vc.width, vc.height); vx.globalAlpha = 1; }
+  };
+  const vloop = () => { paint(); requestAnimationFrame(vloop); }; requestAnimationFrame(vloop);
+  const loadFrame = async i => { try { bmps[i] = await createImageBitmap(await (await fetch(`${DIR}f${String(i).padStart(2, '0')}.webp?v=20261104j`)).blob()); } catch (e) {} if (i === 0) lastKey = ''; };
+  (async () => { await loadFrame(0); const q = [...Array(N - 1).keys()].map(k => k + 1); await Promise.all([0, 1, 2, 3, 4, 5].map(async () => { while (q.length) await loadFrame(q.shift()); })); })();
+
   const packs = gsap.utils.toArray('.pack');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -112,7 +129,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   place(false);
 
   if (reduce || !window.ScrollTrigger) {            // static, fully visible fallback
-    cv.style.display = 'none';
+    cv.style.display = 'none'; vs.p = 1;
     document.querySelector('.bgfade').style.opacity = 1;
     fall.forEach(n => gsap.set(n, { rotate: +n.dataset.r }));
     return;
@@ -148,7 +165,8 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   tl.to(state, { z: 1, duration: 2.6, ease: 'power1.in', onUpdate: draw }, 0)        // 1) zoom through the logo
     .to('.intro', { opacity: 0, duration: .3, ease: 'none' }, 2.45)
     .to('.scroll-hint', { opacity: 0, duration: .3 }, .35)
-    .fromTo('.hero__video', { scale: 1.04 }, { scale: 1.3, duration: 6, ease: 'power1.inOut' }, 0)   // 2) slow push through the plantation
+    .to(vs, { p: 1, duration: 5.2, ease: 'none' }, 0)                                  // 2) video plays as you scroll
+    .fromTo('.hero__video', { scale: 1.04 }, { scale: 1.15, duration: 6, ease: 'power1.inOut' }, 0)
     .fromTo(flyEls, { x: i => Math.cos(ang(i)) * innerWidth * .03, y: i => Math.sin(ang(i)) * innerHeight * .03, scale: .3, rotate: i => i * 37, opacity: 0 },
       { x: i => Math.cos(ang(i)) * innerWidth * .75, y: i => Math.sin(ang(i)) * innerHeight * .8, scale: i => 2 + (i % 3), rotate: i => i * 37 + 70, duration: 2.6, stagger: .28, ease: 'power2.in' }, 1.8)
     .to(flyEls, { opacity: 1, duration: .5, stagger: .28, ease: 'none' }, 1.8)
