@@ -52,7 +52,7 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
 .hero__shade{position:absolute;inset:0;opacity:0;display:none;background:
   radial-gradient(70% 60% at 50% 55%,rgba(8,20,10,.55),rgba(8,20,10,.15) 70%),
   linear-gradient(180deg,rgba(8,20,10,.25),rgba(8,20,10,.55))}
-.hero{--tail:max(calc(var(--arc)*1.6),26svh)}
+.hero{--tail:0px}   /* no separate area under the hero: the curved edge overlays the bottom of the one full-screen hero */
 .hero__tail{position:relative;z-index:4;height:var(--tail)}
 .hero__arc{position:absolute;left:0;bottom:-1px;width:100%;height:var(--arc);pointer-events:none}
 .hero{padding-bottom:0}
@@ -61,8 +61,8 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
 /* ---------- slide (end state) ---------- */
 .hero{--u:min(calc(100vw/1920),calc((100svh - var(--chrome))/927));--arc:max(40px,calc(120*var(--u)))}
 .stage{clip-path:inset(-300px -100vw calc(-1*var(--tail)) -100vw);position:absolute;top:var(--chrome);left:50%;width:calc(1920*var(--u));height:calc(927*var(--u));margin-left:calc(-960*var(--u))}
-.slide{position:absolute;inset:0 0 calc(-1*var(--tail)) 0;z-index:2}
-.bgfade{position:absolute;inset:0;opacity:0;will-change:opacity}
+.slide{position:absolute;inset:0;z-index:2}
+.bgfade{position:absolute;inset:0;opacity:0;will-change:opacity;background:#153f80}
 .leaves{position:absolute;inset:0;pointer-events:none}
 .leaves img{position:absolute;height:auto;will-change:transform,opacity}
 .leaves--front{z-index:5}
@@ -251,12 +251,11 @@ html.lenis,html.lenis body{height:auto}
 
 
 /* ---------- themed backgrounds per front pack ---------- */
-.bg{position:absolute;inset:0;opacity:0;transition:opacity .7s var(--ease)}
-.bg--blue{background:#153f80;opacity:1}
+.bg{position:absolute;inset:0;opacity:0;z-index:0;transition:opacity 0s .7s}   /* outgoing layer stays opaque until the incoming one has fully faded in: the video behind never shows through */
+.bg--blue{background:#153f80}
 .bg--brown{background:radial-gradient(70% 80% at 62% 45%,#7a3f2b 0%,#5a2c1d 45%,#3b1a10 100%)}
 .bg--green{background:radial-gradient(70% 80% at 55% 45%,#1f9a3c 0%,#0f6e27 50%,#08461a 100%)}
-.slide[data-theme=brown] .bg--blue,.slide[data-theme=green] .bg--blue{opacity:0}
-.slide[data-theme=brown] .bg--brown,.slide[data-theme=green] .bg--green{opacity:1}
+.slide[data-theme=blue] .bg--blue,.slide[data-theme=brown] .bg--brown,.slide[data-theme=green] .bg--green{opacity:1;z-index:1;transition:opacity .7s var(--ease)}
 .beans,.leaves{transition:opacity .6s var(--ease)}
 .beans{position:absolute;inset:0;pointer-events:none;opacity:0}
 .beans--front{z-index:5}
