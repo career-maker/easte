@@ -196,7 +196,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     .to(['.l2 .t', '.l2 .splash'], { yPercent: 0, opacity: 1, duration: .5, ease: 'power3.out' }, 6.65)
     .to('.sub', { y: 0, opacity: 1, duration: .4, ease: 'power2.out' }, 6.9)
     .to('.btn', { y: 0, opacity: 1, duration: .4, stagger: .12, ease: 'power2.out' }, 7.05)
-    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 7.9)
+    .to('.next', { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, 6.7)
     .add(() => { tl.scrollTrigger.direction > 0 ? hdr.timeScale(1).play() : hdr.timeScale(1.6).reverse(); }, 7.9)   // header returns when the scroll sequence is done
     .to({}, { duration: .6 });                      // hold
 
@@ -263,7 +263,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
   const dlg = document.createElement('div');
   dlg.className = 'qv'; dlg.hidden = true; dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-labelledby', 'qvTitle');
   dlg.innerHTML = `<div class="qv__scrim"></div><div class="qv__card">
-    <button class="qv__x" type="button" aria-label="Close">×</button>
+    <button class="qv__x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
     <div class="qv__img"><img alt=""></div>
     <div class="qv__body">
       <span class="qv__tag"></span><h3 id="qvTitle"></h3>

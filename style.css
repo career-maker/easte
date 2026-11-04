@@ -281,7 +281,7 @@ html.lenis,html.lenis body{height:auto}
 .qv__scrim{position:absolute;inset:0;background:rgba(10,14,28,.55);opacity:0;transition:opacity .35s var(--ease)}
 .qv.on .qv__scrim{opacity:1}
 .qv__card{position:relative;display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:22px;width:min(560px,100%);padding:26px;border-radius:26px;background:#fff;color:var(--ink);box-shadow:0 40px 90px rgba(0,0,0,.45)}
-.qv__x{position:absolute;right:14px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#f3f1f1;font:400 24px/1 var(--font);cursor:pointer;transition:background .25s,transform .35s var(--ease)}
+.qv__x{position:absolute;right:16px;top:16px;width:36px;height:36px;padding:0;display:grid;place-items:center;border:0;border-radius:50%;background:#f3f1f1;color:var(--ink);cursor:pointer;z-index:2;transition:background .25s,transform .35s var(--ease)}
 .qv__x:hover{background:var(--ink);color:#fff;transform:rotate(90deg)}
 .qv__img{display:grid;place-items:center;border-radius:18px;background:radial-gradient(circle at 50% 40%,#fff,#ece8e4);padding:12px}
 .qv__img img{width:100%;max-height:240px;object-fit:contain;filter:drop-shadow(0 14px 14px rgba(0,0,0,.25))}
@@ -309,3 +309,5 @@ html.lenis,html.lenis body{height:auto}
 @media (max-width:520px){.qv__card{grid-template-columns:1fr;padding:20px;gap:12px;max-height:94svh;overflow:auto}.qv__img{padding:8px}.qv__img img{max-height:150px}}
 
 
+
+.qv__body h3{padding-right:34px}
