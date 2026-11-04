@@ -86,6 +86,8 @@ nav a.is-active::after{content:"";position:absolute;left:50%;bottom:0;width:calc
 
 .packs{position:absolute;inset:0;z-index:4;pointer-events:none}
 .pack{position:absolute;will-change:left,top,width,opacity}
+.pack:not(.is-main){cursor:pointer}
+.pack:focus-visible{outline:2px solid #fff;outline-offset:6px;border-radius:12px}
 .pack img{display:block;width:100%;height:auto}
 .pack::after{content:"";position:absolute;left:8%;right:8%;bottom:-3%;height:7%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),transparent);z-index:-1}
 .pack--green{left:calc(1000*var(--u));top:calc(167*var(--u));width:calc(384*var(--u))}

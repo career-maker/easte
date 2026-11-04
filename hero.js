@@ -86,7 +86,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     n.style.setProperty('--wd', (3.2 + (i % 5) * .7) + 's');
     n.style.setProperty('--wdl', (-i * .55) + 's');
   });
-  const slideEl = document.querySelector('.slide');
+  const slideEl = document.querySelector('.slide'), pi_name = i => packs[i].dataset.name;
   const THEMES = ['blue', 'brown', 'green'];
 
   // slider: three slots, the big arrow rotates the packs through them
@@ -114,6 +114,7 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
       const t = { ...slots[s] }; delete t._s;
       if (mobile()) t.top = ch * .96 - t.width * ASP[pi];
       packs[pi].classList.toggle('is-main', s === 0);
+      packs[pi].tabIndex = s === 0 ? -1 : 0; packs[pi].setAttribute('role', s === 0 ? 'group' : 'button'); packs[pi].setAttribute('aria-label', s === 0 ? pi_name(pi) : 'Show ' + pi_name(pi));
       if (s === 0) { slideEl.dataset.theme = THEMES[pi]; slideEl.closest('.hero').dataset.theme = THEMES[pi]; }
       packs[pi].style.zIndex = 3 - s;
       const im = packs[pi].querySelector('img'), f = { filter: `blur(${BLUR[s]}px) brightness(${DIM[s]})` };
@@ -122,6 +123,11 @@ if (window.Lenis && window.gsap && window.ScrollTrigger && !matchMedia('(prefers
     });
   };
   document.querySelector('.next').addEventListener('click', () => { order = [order[1], order[2], order[0]]; place(true); });
+  packs.forEach((p, pi) => {                           // clicking a side pack brings it to the front
+    const go = () => { if (order[0] === pi) return; while (order[0] !== pi) order = [order[1], order[2], order[0]]; place(true); };
+    p.addEventListener('click', e => { if (!e.target.closest('.plus')) go(); });
+    p.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target === p) { e.preventDefault(); go(); } });
+  });
   addEventListener('resize', () => place(false));
   addEventListener('orientationchange', () => setTimeout(() => place(false), 250));
   addEventListener('load', () => place(false));
